@@ -2,17 +2,21 @@
 
 /* Dark Theme (default) */
 :root {
-  --background-color: #181823;
-  --text-color: #e9f8f9;
-  --secondary: #c0eef2;
-  --primary: #537fe7;
-  --link-color: #537fe7;
+  --background-color: #f7f7f7;
+  --text-color: #000000;
+  --blue: #c0eef2;
+  --yellow: #537fe7;
+  --orange: #537fe7;
+  --green: #537fe7;
+
+  --card-shadow: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.075),
+    /* shadow ring 👇 */ 0 0 0 1px hsla(0, 0%, 0%, 0.05),
+    /* multiple soft shadows 👇 */ 0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+    0 0.9px 1.5px hsla(0, 0%, 0%, 0.045), 0 3.5px 6px hsla(0, 0%, 0%, 0.09);
+  --input-bg: #eeeeee;
   --link-hover: #8a99c7;
-  --header-bg: #242b3b;
-  --card-bg: #222831;
   --button-bg: #537fe7;
   --button-hover-bg: #4056a1;
-  --border-color: #4a4a6a;
 }
 
 * {
@@ -50,16 +54,31 @@ a:active {
   color: var(--link-hover);
 }
 
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+input[type="text"],
+button {
+  border-radius: 1rem;
+  color: var(--background-color);
+  font-size: inherit;
+  font-family: inherit;
+  background-color: var(--input-bg);
+  padding: 0 1.2rem;
+  margin: 0rem 1rem 1rem 0;
+}
+
 .navbar-brand:link,
 .navbar-brand:visited {
-  color: var(--secondary);
+  color: inherit;
   font-size: 2.4rem;
   font-weight: 900;
   transition: all 0.3s;
 }
 .navbar-brand:hover,
 .navbar-brand:active {
-  color: var(--text-color);
+  color: blue;
 }
 
 /* FORM */
@@ -67,16 +86,14 @@ a:active {
 #city {
   width: 40rem;
   height: 4rem;
-  font-size: inherit;
-  font-family: inherit;
-  color: var(--background-color);
-  background-color: var(--text-color);
+  border-radius: 1rem;
   padding: 0 1.2rem;
   margin: 0rem 1rem 1rem 0;
+  color: inherit;
 }
 
 #city::placeholder {
-  color: var(--primary);
+  color: #747264;
 }
 
 .btn-primary {
@@ -134,16 +151,20 @@ main {
   color: var(--primary);
 }
 
-.nav-link.disabled {
-  color: var(--border-color);
-}
-
 /* Dashboard */
 section {
   margin-bottom: 3.2rem;
 }
-.weather-showcase.hidden {
-  opacity: 0;
+
+/* CHART  */
+
+#hourlyForecastChart {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 300px !important;
+  border: 1px solid red; /* Add a border to make it visible */
 }
 
 /* TODAY AND TOMORROW */
@@ -158,10 +179,9 @@ section {
 .temp-col {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
   padding: 2rem;
   border-radius: 1rem;
-  border: 1px solid var(--border-color);
   width: 100%;
   height: 100%;
 }
@@ -173,12 +193,17 @@ section {
 }
 
 .message-col div {
-  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
   padding: 2rem;
   border-radius: 1rem;
-  border: 1px solid var(--border-color);
 }
 
+.weather-description {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+  justify-content: space-between;
+}
 /* NEXT 7 DAYS */
 #next-days {
   width: 100%;
@@ -191,15 +216,15 @@ section {
 }
 
 .card {
+  border: none;
   cursor: pointer;
-  color: var(--text-color);
-  background-color: var(--card-bg);
-  padding: 2rem;
+  color: inherit;
+  background-color: transparent;
+  box-shadow: var(--card-shadow);
   border-radius: 1rem;
-  border: 1px solid var(--border-color);
   padding: 1.8rem;
   width: auto;
-  height: 24rem;
+  height: 30rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -260,39 +285,28 @@ section {
 }
 
 #task-container .col {
-  background-color: var(--card-bg);
-  padding: 2rem;
+  box-shadow: var(--card-shadow);
   border-radius: 1rem;
-  border: 1px solid var(--border-color);
   padding: 1.8rem;
 }
 
 .progress-col {
   height: 24rem;
 }
+
 /*  */
 ul.list-group {
-  background-color: var(--card-bg);
+  box-shadow: var(--card-shadow);
   padding: 0;
 }
 
 .list-group-item {
   border: none;
-  background-color: var(--card-bg);
-  color: var(--text-color);
+  box-shadow: var(--card-shadow);
 }
 
 .list-group-item:hover {
-  background-color: var(--primary);
-}
-
-input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-input[type="text"],
-button {
-  border-radius: 5px;
+  background-color: var(--background-color);
 }
 
 /* Flex Layout for Navbar */
@@ -312,76 +326,27 @@ button {
 }
 
 /* Light Theme */
-[data-theme="light"] {
-  --background-color: #f4f4f4;
-  --text-color: #333;
-  --secondary: #c0eef2;
-  --primary: #537fe7;
-  --link-color: #537fe7;
-  --link-hover: #4056a1;
-  --header-bg: #ffffff;
-  --card-bg: #ffffff;
-  --button-bg: #537fe7;
-  --button-hover-bg: #4056a1;
-  --border-color: #ddd;
+[data-theme="dark"] {
+  --background-color: #121212;
+  --text-color: #f5f5f5;
+  --input-bg: #d8d2c2;
 }
 
-[data-theme="light"] body {
+[data-theme="dark"] body {
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
-[data-theme="light"] nav {
-  background-color: var(--header-bg);
-}
-
-[data-theme="light"] .navbar-brand {
+[data-theme="dark"] .navbar .nav-link {
   color: var(--text-color);
 }
 
-[data-theme="light"] .navbar .nav-link {
-  color: var(--text-color);
-}
-
-[data-theme="light"] .navbar .nav-link:hover {
+[data-theme="dark"] .navbar .nav-link:hover {
   color: var(--primary);
 }
 
-[data-theme="light"] #today,
-[data-theme="light"] #next-days {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-}
-
-[data-theme="light"] #today .col,
-[data-theme="light"] #next-days div {
-  background-color: var(--card-bg);
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-}
-
-[data-theme="light"] ul.list-group {
-  background-color: var(--card-bg);
-  padding: 0;
-}
-
-[data-theme="light"] .list-group-item {
-  border: none;
-  background-color: var(--card-bg);
-  color: var(--text-color);
-}
-
-[data-theme="light"] .list-group-item:hover {
-  background-color: var(--primary);
-}
-
-[data-theme="light"] input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-[data-theme="light"] input[type="text"],
-[data-theme="light"] button {
-  border-radius: 5px;
+#today.hidden,
+#next-days.hidden,
+#tomorrow.hidden {
+  display: none;
 }
