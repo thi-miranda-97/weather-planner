@@ -37,7 +37,18 @@ if (isset($_GET['city'])) {
         'temperature' => $weatherData['list'][$i]['main']['temp'] // Temperature in °C
       ];
     }
-
+    // $hourlyForecast = [];
+    // foreach ($weatherData['list'] as $dayForecast) {
+    //   $hourlyForecast[] = [
+    //     'time' => ['morning', 'afternoon', 'evening', 'night'],
+    //     'temperature' => [
+    //       'morning' => $dayForecast['temp']['morn'], // Morning temperature
+    //       'afternoon' => $dayForecast['temp']['day'], // Afternoon temperature
+    //       'evening' => $dayForecast['temp']['eve'], // Evening temperature
+    //       'night' => $dayForecast['temp']['night'] // Night temperature
+    //     ]
+    //   ];
+    // }
 
     // Fetch UV index (requires latitude and longitude)
     $lat = $weatherData['city']['coord']['lat'];
