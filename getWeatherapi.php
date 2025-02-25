@@ -20,7 +20,7 @@ if (isset($_GET['city'])) {
     // Extract current weather and forecast data
     $currentWeather = [
       'cityName' => $weatherData['city']['name'],
-      'localTime' => date('Y/m/d H:i'),
+      'localTime' => gmdate('Y/m/d H:i', time() + $weatherData['city']['timezone']),
       'temperature' => $weatherData['list'][0]['main']['temp'],
       'weatherDescription' => $weatherData['list'][0]['weather'][0]['description'],
       'pressure' => $weatherData['list'][0]['main']['pressure'],
@@ -28,9 +28,10 @@ if (isset($_GET['city'])) {
       'windSpeed' => $weatherData['list'][0]['wind']['speed']
     ];
 
+
     // Extract hourly forecast for the next 4 hours
     $hourlyForecast = [];
-    for ($i = 0; $i < 4; $i++) { // Next 4 hours
+    for ($i = 0; $i < 6; $i++) { // Next 4 hours
       $hourlyForecast[] = [
         'time' => date('H:i', strtotime($weatherData['list'][$i]['dt_txt'])), // Time in HH:MM format
         'temperature' => $weatherData['list'][$i]['main']['temp'] // Temperature in °C
@@ -51,21 +52,11 @@ if (isset($_GET['city'])) {
     }
 
 
-
-
-    // Extract tomorrow's weather
-    $tomorrowWeather = [
-      'date' => date('Y-m-d', strtotime('+1 day')),
-      'temperature' => $weatherData['list'][8]['main']['temp'], // 24 hours later
-      'weatherDescription' => $weatherData['list'][8]['weather'][0]['description'],
-      'pressure' => $weatherData['list'][8]['main']['pressure'],
-    ];
-
-    // Extract 7-day forecast
+    // Extract 5-day forecast
     $fiveDayForecast = [];
     for ($i = 0; $i < count($weatherData['list']); $i += 8) { // Every 24 hours (8 intervals of 3 hours)
-      $fivenDayForecast[] = [
-        'date' => date('Y-m-d', strtotime($weatherData['list'][$i]['dt_txt'])),
+      $fiveDayForecast[] = [
+        'day'  => date('l', strtotime($weatherData['list'][$i]['dt_txt'])),
         'temperature' => $weatherData['list'][$i]['main']['temp'],
         'weatherDescription' => $weatherData['list'][$i]['weather'][0]['description'],
         'pressure' => $weatherData['list'][$i]['main']['pressure'],
@@ -77,8 +68,7 @@ if (isset($_GET['city'])) {
     // Prepare response
     $result = [
       'currentWeather' => $currentWeather,
-      'tomorrowWeather' => $tomorrowWeather,
-      'sevenDayForecast' => $fivenDayForecast,
+      'fiveDayForecast' => $fiveDayForecast,
       'hourlyForecast' => $hourlyForecast,
     ];
     echo json_encode($result); // Return JSON data
