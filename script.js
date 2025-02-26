@@ -79,66 +79,62 @@ $(document).ready(function () {
 
   function generateWeatherHTML(id, title, date, time, weather, hourlyForecast) {
     return `
-      <section id="${id}" class="weather-showcase container-fluid">
-        <div class="col row temp-col">
-          <div id="current-weather">
-            <div class="d-flex justify-content-between">
-              <p>${title} (${date})</p>
-              <p>${time}</p>
-            </div>
-            <div class="">
-              <p class="temp">${weather.temperature}&deg;C</p>
-              <p>${weather.weatherDescription}</p>
-            </div>
-            <div class="weather-description d-flex">
-              <div class="flex-grow-1">
-              
-                <p>${generateWeatherIcon(
-                  "bi-water"
-                )} ${weather.pressure} hPa</p>
-                <p>${generateWeatherIcon(
-                  "bi-droplet-half"
-                )} ${weather.humidity}%</p>
-              </div>
-              <div class="flex-grow-1">
-                <p>${generateWeatherIcon(
-                  "bi-wind"
-                )} ${weather.windSpeed} m/s</p>
-                <p>${generateWeatherIcon(
-                  "bi-brightness-low"
-                )} ${weather.uvIndex}</p>
-              </div>
-            </div>
+  <section id="${id}" class="weather-showcase container-fluid">
+    <div class="col row temp-col">
+      <div id="current-weather">
+        <div class="d-flex justify-content-between">
+          <p>${title} (${date})</p>
+          <p>${time}</p>
+        </div>
+        <div class="">
+          <p class="temp">${weather.temperature}&deg;C</p>
+          <p>${weather.weatherDescription}</p>
+        </div>
+        <div class="weather-description d-flex">
+          <div class="flex-grow-1">
+          
+            <p>${generateWeatherIcon("bi-water")} ${weather.pressure} hPa</p>
+            <p>${generateWeatherIcon(
+              "bi-droplet-half"
+            )} ${weather.humidity}%</p>
           </div>
-          <div class="col">
-            <p>Hourly Forecast</p>
-            <canvas id="hourlyForecastChart" aria-label="Hourly Forecast Line Chart" role="img"></canvas>
+          <div class="flex-grow-1">
+            <p>${generateWeatherIcon("bi-wind")} ${weather.windSpeed} m/s</p>
+            <p>${generateWeatherIcon(
+              "bi-brightness-low"
+            )} ${weather.uvIndex}</p>
           </div>
         </div>
-      </section>`;
+      </div>
+      <div class="col">
+        <p>Hourly Forecast</p>
+        <canvas id="hourlyForecastChart" aria-label="Hourly Forecast Line Chart" role="img"></canvas>
+      </div>
+    </div>
+  </section>`;
   }
 
   function generateForecastHTML(forecast) {
     let forecastHtml = `<section id="next-days" class="weather-showcase hidden container-fluid d-flex justify-content-between">`;
     forecast.forEach((day) => {
       forecastHtml += `
-        <div class="card">
-          <p>${day.day}</p>
-          <div class="icon-container">
-            <p class="temp">${day.temperature}&deg;C</p>
-            ${generateWeatherIcon("bi-brightness-high")}
-          </div>
-          <div class="card-content d-flex justify-content-between">
-            <div class="row">
-              <p>${generateWeatherIcon("bi-water")} ${day.pressure} hPa</p>
-              <p>${generateWeatherIcon("bi-droplet-half")} ${day.humidity}%</p>
-            </div>
-            <div class="row">
-              <p>${generateWeatherIcon("bi-wind")} ${day.windSpeed} m/s</p>
-              <p>${generateWeatherIcon("bi-brightness-low")} ${day.uvIndex}</p>
-            </div>
-          </div>
-        </div>`;
+    <div class="card">
+      <p>${day.day}</p>
+      <div class="icon-container">
+        <p class="temp">${day.temperature}&deg;C</p>
+        ${generateWeatherIcon("bi-brightness-high")}
+      </div>
+      <div class="card-content d-flex justify-content-between">
+        <div class="row">
+          <p>${generateWeatherIcon("bi-water")} ${day.pressure} hPa</p>
+          <p>${generateWeatherIcon("bi-droplet-half")} ${day.humidity}%</p>
+        </div>
+        <div class="row">
+          <p>${generateWeatherIcon("bi-wind")} ${day.windSpeed} m/s</p>
+          <p>${generateWeatherIcon("bi-brightness-low")} ${day.uvIndex}</p>
+        </div>
+      </div>
+    </div>`;
     });
     forecastHtml += `</section>`;
     return forecastHtml;
@@ -271,13 +267,17 @@ $(document).ready(function () {
     $.ajax({
       url: "user_auth.php",
       type: "POST",
-      data: { action, username, email, password },
+      data: {
+        action,
+        username,
+        email,
+        password,
+      },
       dataType: "json",
       success: function (response) {
-        console.log("Response received:", response);
         if (response.status === "success") {
-          $("#username").text(response.username);
-          // $(".user-name").text(`Welcome ${response.username}`);
+          localStorage.setItem("username", response.username);
+          $("#user-name").text(response.username);
           $("#sign-in-btn").addClass("d-none");
           $("#sign-out-btn").removeClass("d-none");
           $("#authModal").modal("hide");
@@ -292,11 +292,13 @@ $(document).ready(function () {
   $("#sign-out-btn").click(function () {
     $.post(
       "user_auth.php",
-      { action: "signout" },
+      {
+        action: "signout",
+      },
       function (response) {
         if (response.status === "success") {
-          $("#username").text("Welcome");
-          $(".user-name").text("Welcome");
+          localStorage.removeItem("username");
+          $("#user-name").text("Guest");
           $("#sign-in-btn").removeClass("d-none");
           $("#sign-out-btn").addClass("d-none");
         }
@@ -304,4 +306,140 @@ $(document).ready(function () {
       "json"
     );
   });
+
+  // Open Add Task Modal when Add Task button is clicked
+  $("#addTaskBtn").on("click", function () {
+    $("#taskForm")[0].reset();
+    $("#taskId").val("");
+    $("#taskModal").modal("show");
+  });
+
+  // Fetch tasks for the user
+  function fetchTasks() {
+    $.post(
+      "tasks.php",
+      { action: "fetch" },
+      function (response) {
+        if (response.status === "success") {
+          $("#taskList").empty();
+          response.tasks.forEach(function (task) {
+            const taskItem = `
+            <li class="list-group-item align-items-center" id="task-${task.id}">
+            <div>
+                <input class="form-check-input me-1" type="checkbox" value="" id="checkbox1">
+                <label class="form-check-label" for="checkbox-${task.id}">${task.task}</label>
+              </div>
+              
+              <span>${task.due_date}</span>
+              
+              
+              <span>${task.tag}</span>
+              
+              <div class="btn-group">
+                <button class="btn btn-info editTaskBtn" data-task-id="${task.id}">Edit</button>
+                <button class="btn btn-danger deleteTaskBtn" data-task-id="${task.id}">Delete</button>
+              </div>
+            </li>`;
+            $("#taskList").append(taskItem);
+          });
+        } else {
+          alert(response.message);
+        }
+      },
+      "json"
+    );
+  }
+
+  // Handle Task Form Submission
+  $("#taskForm").submit(function (e) {
+    e.preventDefault();
+    const taskId = $("#taskId").val();
+    const taskName = $("#taskName").val();
+    const dueDate = $("#dueDate").val();
+    const taskTag = $("#taskTag").val();
+
+    const action = taskId ? "update" : "add";
+
+    console.log("Submitting task:", {
+      action,
+      taskId,
+      taskName,
+      dueDate,
+      taskTag,
+    }); // Debugging
+
+    $.post(
+      "tasks.php",
+      {
+        action: action,
+        taskId: taskId,
+        taskName: taskName,
+        dueDate: dueDate,
+        taskTag: taskTag,
+      },
+      function (response) {
+        console.log("Server response:", response); // Debugging
+        if (response.status === "success") {
+          $("#taskModal").modal("hide");
+          fetchTasks();
+        } else {
+          alert(response.message);
+        }
+      },
+      "json"
+    );
+  });
+
+  // Edit task (Event Delegation)
+  $(document).on("click", ".editTaskBtn", function () {
+    const taskId = $(this).data("task-id");
+    console.log("Fetching task with ID:", taskId);
+    $.post(
+      "tasks.php",
+      { action: "fetch", taskId: taskId },
+      function (response) {
+        console.log("Server response:", response); // Debugging
+        if (response.status === "success") {
+          const task = response.task;
+          if (task) {
+            console.log(task.id);
+            $("#taskId").val(task.id);
+
+            $("#taskName").val(task.task);
+            $("#dueDate").val(task.due_date);
+            $("#taskTag").val(task.tag);
+            $("#taskModal").modal("show");
+          } else {
+            alert("Task not found.");
+          }
+        } else {
+          alert(response.message);
+        }
+      },
+      "json"
+    );
+  });
+
+  // Delete task (Event Delegation)
+  $(document).on("click", ".deleteTaskBtn", function () {
+    const taskId = $(this).data("task-id");
+
+    if (confirm("Are you sure you want to delete this task?")) {
+      $.post(
+        "tasks.php",
+        { action: "delete", taskId: taskId },
+        function (response) {
+          if (response.status === "success") {
+            $(`#task-${taskId}`).remove();
+          } else {
+            alert(response.message);
+          }
+        },
+        "json"
+      );
+    }
+  });
+
+  // Initial fetch of tasks
+  fetchTasks();
 });

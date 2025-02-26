@@ -21,11 +21,11 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
 
 <body>
   <!-- Modal for Sign Up & Sign In -->
-  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="h2 modal-title" id="authModalLabel">Welcome to WEPLAN</h2>
+          <h2 class="h2 modal-title" id="authModalLabel">Sign In</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -33,21 +33,22 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
             <input type="hidden" id="authAction" value="signin">
 
             <div class="mb-3 d-none" id="signup-fields">
-              <label for="username" class="form-label" name="username" placeholder="Enter Username" required>Username</label>
-              <input type="text" class="form-control" id="username">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" autocomplete="username">
             </div>
 
             <div class="mb-3">
               <label for="email" class="form-label">Email address</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required autocomplete="email">
             </div>
 
-            <div class="mb-3">
+            <div class="mb-5">
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Sign In</button>
+
           </form>
 
           <p class="text-center mt-3">
@@ -106,12 +107,11 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
           <!-- User Avatar Dropdown -->
           <div class="dropdown d-flex gap-3">
 
-            <!-- <p class="user-name">Welcome <?php echo $username; ?></p> -->
             <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button"
               id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 
               <!-- <img src="" alt="User Avatar" class="rounded-circle me-2"> -->
-              <span id="username"><?php echo $username; ?></span>
+              <span id="user-name"><?php echo $username; ?></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="#">Profile</a></li>
@@ -144,11 +144,10 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
 
     <!-- Task Section (only visible to authenticated users) -->
     <?php if (isset($_SESSION['user'])): ?>
-      <!-- Task section -->
       <section id="task-section" class="container-fluid">
 
         <div class="col progress-col">
-          <h3 class="h3">Progress bar</h3>
+
           <p><span>55</span> ouf of 100 tasks completed
           </p>
           <!-- Progress bar -->
@@ -158,40 +157,48 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
         </div>
 
         <!-- Task list -->
-        <div class="col">
-          <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between">
-              <div>
-                <input class="form-check-input me-1" type="checkbox" value="" id="checkbox1">
-                <label class="form-check-label" for="checkbox1">First checkbox</label>
-              </div>
-              <span>12/2/2025</span>
-              <span>tag</span>
-              <!-- icon delete and edit -->
-            </li>
-            <li class="list-group-item">
-              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox2">
-              <label class="form-check-label" for="checkbox2">Second checkbox</label>
-            </li>
-            <li class="list-group-item">
-              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox3">
-              <label class="form-check-label" for="checkbox3">Third checkbox</label>
-            </li>
-            <li class="list-group-item">
-              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox4">
-              <label class="form-check-label" for="checkbox4">Fourth checkbox</label>
-            </li>
-            <li class="list-group-item">
-              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox5">
-              <label class="form-check-label" for="checkbox5">Fifth checkbox</label>
-            </li>
-            <li class="list-group-item">
-              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox6">
-              <label class="form-check-label" for="checkbox6">Sixth checkbox</label>
-            </li>
+        <div class="col task-col">
+          <div class="d-flex justify-content-between align-items-center mb-5">
+            <h3 class="h3">My Tasks</h3>
+            <button class="btn btn-success w-25" id="addTaskBtn">+ Add Task</button>
+          </div>
+          <ul id="taskList" class="list-group">
+
+            <!-- Render dynamically in AJAX -->
           </ul>
         </div>
       </section>
+
+      <!-- Add/Edit Task Modal -->
+      <div class="modal fade" id="taskModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add/Edit Task</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <form id="taskForm">
+                <input type="hidden" id="taskId">
+                <div class="mb-3">
+                  <label for="taskName" class="form-label">Task</label>
+                  <input type="text" class="form-control" id="taskName" required>
+                </div>
+                <div class="mb-3">
+                  <label for="dueDate" class="form-label">Due Date</label>
+                  <input type="date" class="form-control" id="dueDate">
+                </div>
+                <div class="mb-3">
+                  <label for="taskTag" class="form-label">Tag</label>
+                  <input type="text" class="form-control" id="taskTag">
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
     <?php else: ?>
       <p>Please sign in to view your tasks.</p>
@@ -207,8 +214,7 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
   <!-- Include Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Custom Script -->
-  <script src="./script.js">
-  </script>
+  <script src="script.js"></script>
 </body>
 
 </html>
