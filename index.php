@@ -1,3 +1,9 @@
+<?php
+session_start();
+$username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
+?>
+
+
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 
@@ -14,6 +20,44 @@
 </head>
 
 <body>
+  <!-- Modal for Sign Up & Sign In -->
+  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="h2 modal-title" id="authModalLabel">Welcome to WEPLAN</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="authForm" method="POST" action="user_auth.php">
+            <input type="hidden" id="authAction" value="signin">
+
+            <div class="mb-3 d-none" id="signup-fields">
+              <label for="username" class="form-label" name="username" placeholder="Enter Username" required>Username</label>
+              <input type="text" class="form-control" id="username">
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Sign In</button>
+          </form>
+
+          <p class="text-center mt-3">
+            <a href="#" id="toggleAuth">Don't have an account? Sign Up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <header>
 
@@ -61,12 +105,13 @@
 
           <!-- User Avatar Dropdown -->
           <div class="dropdown d-flex gap-3">
-            <p class="user-name">Welcome</p>
+
+            <!-- <p class="user-name">Welcome <?php echo $username; ?></p> -->
             <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button"
               id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 
               <!-- <img src="" alt="User Avatar" class="rounded-circle me-2"> -->
-              <span id="username">Guest</span>
+              <span id="username"><?php echo $username; ?></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="#">Profile</a></li>
@@ -78,19 +123,11 @@
               <li><button id="sign-out-btn" class="dropdown-item d-none">Sign Out</button></li>
             </ul>
           </div>
-
-
-
-
         </div>
       </div>
 
     </nav>
   </header>
-
-
-
-
 
   <main>
     <ul class="nav">
@@ -104,58 +141,61 @@
     </ul>
     <article id="weatherResult"></article>
 
-    <!-- Task section -->
 
-    <section id="task-container" class="container-fluid">
+    <!-- Task Section (only visible to authenticated users) -->
+    <?php if (isset($_SESSION['user'])): ?>
+      <!-- Task section -->
+      <section id="task-section" class="container-fluid">
 
-      <div class="col progress-col">
-        <h3 class="h3">Progress bar</h3>
-        <p><span>55</span> ouf of 100 tasks completed
-        </p>
-        <!-- Progress bar -->
-        <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-bar" style="width: 25%">25%</div>
+        <div class="col progress-col">
+          <h3 class="h3">Progress bar</h3>
+          <p><span>55</span> ouf of 100 tasks completed
+          </p>
+          <!-- Progress bar -->
+          <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" style="width: 25%">25%</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Task list -->
-      <div class="col">
-        <ul class="list-group">
-          <li class="list-group-item d-flex justify-content-between">
-            <div>
-              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox1">
-              <label class="form-check-label" for="checkbox1">First checkbox</label>
-            </div>
-            <span>12/2/2025</span>
-            <span>tag</span>
-            <!-- icon delete and edit -->
-          </li>
-          <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="" id="checkbox2">
-            <label class="form-check-label" for="checkbox2">Second checkbox</label>
-          </li>
-          <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="" id="checkbox3">
-            <label class="form-check-label" for="checkbox3">Third checkbox</label>
-          </li>
-          <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="" id="checkbox4">
-            <label class="form-check-label" for="checkbox4">Fourth checkbox</label>
-          </li>
-          <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="" id="checkbox5">
-            <label class="form-check-label" for="checkbox5">Fifth checkbox</label>
-          </li>
-          <li class="list-group-item">
-            <input class="form-check-input me-1" type="checkbox" value="" id="checkbox6">
-            <label class="form-check-label" for="checkbox6">Sixth checkbox</label>
-          </li>
-        </ul>
-      </div>
+        <!-- Task list -->
+        <div class="col">
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between">
+              <div>
+                <input class="form-check-input me-1" type="checkbox" value="" id="checkbox1">
+                <label class="form-check-label" for="checkbox1">First checkbox</label>
+              </div>
+              <span>12/2/2025</span>
+              <span>tag</span>
+              <!-- icon delete and edit -->
+            </li>
+            <li class="list-group-item">
+              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox2">
+              <label class="form-check-label" for="checkbox2">Second checkbox</label>
+            </li>
+            <li class="list-group-item">
+              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox3">
+              <label class="form-check-label" for="checkbox3">Third checkbox</label>
+            </li>
+            <li class="list-group-item">
+              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox4">
+              <label class="form-check-label" for="checkbox4">Fourth checkbox</label>
+            </li>
+            <li class="list-group-item">
+              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox5">
+              <label class="form-check-label" for="checkbox5">Fifth checkbox</label>
+            </li>
+            <li class="list-group-item">
+              <input class="form-check-input me-1" type="checkbox" value="" id="checkbox6">
+              <label class="form-check-label" for="checkbox6">Sixth checkbox</label>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-
-
-    </section>
+    <?php else: ?>
+      <p>Please sign in to view your tasks.</p>
+    <?php endif; ?>
 
   </main>
 
@@ -167,230 +207,7 @@
   <!-- Include Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Custom Script -->
-  <script>
-    function togglePage(id) {
-      $("#today, #next-days").each(function() {
-        $(this).toggleClass("hidden", this.id !== id);
-      });
-      $(".nav-link").each(function() {
-        $(this).toggleClass("active", $(this).data("target") === id);
-      });
-    }
-
-    $(document).ready(function() {
-      let hourlyForecastChart = null;
-
-      // Theme toggles
-      $("#theme-toggle").on("click", function() {
-        const currentTheme = $("html").attr("data-theme");
-        $("html").attr("data-theme", currentTheme === "light" ? "dark" : "light");
-      });
-
-      // Card hover animation expanding
-      $(document).on("click", "#next-days .card", function() {
-        $("#next-days .card").removeClass("active");
-        $(this).addClass("active");
-      });
-
-      // Function to toggle visibility of sections and update active link
-      togglePage('today');
-
-      // Attach click events to nav-links
-      $(".nav-link").on("click", function(e) {
-        e.preventDefault();
-        togglePage($(this).data("target"));
-      });
-
-
-
-
-
-
-      $('#weatherForm').on('submit', function(e) {
-        e.preventDefault();
-        const city = $('#city').val();
-        if (city) {
-          $.ajax({
-            url: 'getWeatherapi.php',
-            type: 'GET',
-            data: {
-              city: city
-            },
-            dataType: 'json',
-            success: function(response) {
-              if (response.error) {
-                $('#weatherResult').html(`<div class="alert alert-warning">${response.error}</div>`);
-              } else {
-                $('#current-city').text(response.currentWeather.cityName);
-                const localTime = response.currentWeather.localTime.split(' ');
-                const currentHtml = generateWeatherHTML('today', 'Today', localTime[0], localTime[1], response.currentWeather, response.hourlyForecast);
-                const forecastHtml = generateForecastHTML(response.fiveDayForecast);
-                $('#weatherResult').html(currentHtml + forecastHtml);
-                togglePage('today');
-                createChart(response.hourlyForecast);
-              }
-            },
-            error: function() {
-              $('#weatherResult').html('<div class="alert alert-danger">Failed to fetch weather data.</div>');
-            }
-          });
-        } else {
-          $('#weatherResult').html('<div class="alert alert-warning">Please enter a city name.</div>');
-        }
-      });
-
-      function generateWeatherHTML(id, title, date, time, weather, hourlyForecast) {
-        return `
-          <section id="${id}" class="weather-showcase container-fluid">
-            <div class="col row temp-col">
-              <div id="current-weather">
-                <div class="d-flex justify-content-between">
-                  <p>${title} (${date})</p>
-                  <p>${time}</p>
-                </div>
-                <div class="">
-                  <p class="temp">${weather.temperature}&deg;C</p>
-                  <p>${weather.weatherDescription}</p>
-                </div>
-                <div class="weather-description d-flex">
-                  <div class="flex-grow-1">
-                  
-                    <p>${generateWeatherIcon('bi-water')} ${weather.pressure} hPa</p>
-                    <p>${generateWeatherIcon('bi-droplet-half')} ${weather.humidity}%</p>
-                  </div>
-                  <div class="flex-grow-1">
-                    <p>${generateWeatherIcon('bi-wind')} ${weather.windSpeed} m/s</p>
-                    <p>${generateWeatherIcon('bi-brightness-low')} ${weather.uvIndex}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <p>Hourly Forecast</p>
-                <canvas id="hourlyForecastChart" aria-label="Hourly Forecast Line Chart" role="img"></canvas>
-              </div>
-            </div>
-          </section>`;
-      }
-
-      function generateForecastHTML(forecast) {
-        let forecastHtml = `<section id="next-days" class="weather-showcase hidden container-fluid d-flex justify-content-between">`;
-        forecast.forEach(day => {
-          forecastHtml += `
-            <div class="card">
-              <p>${day.day}</p>
-              <div class="icon-container">
-                <p class="temp">${day.temperature}&deg;C</p>
-                ${generateWeatherIcon('bi-brightness-high')}
-              </div>
-              <div class="card-content d-flex justify-content-between">
-                <div class="row">
-                  <p>${generateWeatherIcon('bi-water')} ${day.pressure} hPa</p>
-                  <p>${generateWeatherIcon('bi-droplet-half')} ${day.humidity}%</p>
-                </div>
-                <div class="row">
-                  <p>${generateWeatherIcon('bi-wind')} ${day.windSpeed} m/s</p>
-                  <p>${generateWeatherIcon('bi-brightness-low')} ${day.uvIndex}</p>
-                </div>
-              </div>
-            </div>`;
-        });
-        forecastHtml += `</section>`;
-        return forecastHtml;
-      }
-
-      function generateWeatherIcon(iconClass) {
-        return `<i class="${iconClass}"></i>`;
-      }
-
-      function createChart(hourlyForecast) {
-        const times = hourlyForecast.map(forecast => forecast.time);
-        const temperatures = hourlyForecast.map(forecast => forecast.temperature);
-        const labels = times.map((time, index) => time + "\n" + temperatures[index] + "°C");
-        if (hourlyForecastChart) {
-          hourlyForecastChart.destroy();
-        }
-        const ctx = document.getElementById('hourlyForecastChart').getContext('2d');
-        hourlyForecastChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Temperature (°C)',
-              data: temperatures,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 3,
-              pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-              pointBorderColor: '#fff',
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            font: {
-              family: 'inherit'
-            },
-            plugins: {
-              title: {
-                display: false,
-              },
-              legend: {
-                display: false,
-                position: 'top',
-
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: false,
-                title: {
-                  display: false,
-                },
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  display: false
-                },
-                border: {
-                  display: false,
-                }
-              },
-              x: {
-                title: {
-                  display: false,
-
-                },
-                grid: {
-                  display: false
-                },
-
-                border: {
-                  display: false,
-                },
-                ticks: {
-                  display: true,
-                  font: {
-
-                    size: 12,
-                  },
-                  callback: function(value, index) {
-                    return [times[index], temperatures[index] + "°C"];
-                  },
-                }
-              }
-            },
-            animation: {
-              duration: 1000,
-              easing: 'easeInOutQuad'
-            }
-          }
-        });
-      }
-    });
+  <script src="./script.js">
   </script>
 </body>
 
