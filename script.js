@@ -368,8 +368,6 @@ $(document).ready(function () {
               </div>
               
               <span>${task.due_date}</span>
-              
-              
               <span>${task.tag}</span>
               
               <div class="btn-group">

@@ -47,7 +47,7 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
               <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            <button type="submit" class="btn button-primary w-100">Sign In</button>
 
           </form>
 
@@ -159,8 +159,8 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
         <!-- Task list -->
         <div class="col task-col">
           <div class="d-flex justify-content-between align-items-center mb-5">
-            <h3 class="h3">My Tasks</h3>
-            <button class="btn btn-success w-25" id="addTaskBtn">+ Add Task</button>
+            <h3>My Tasks</h3>
+            <button type="button" class="btn button-primary" id="addTaskBtn">Add Task</button>
           </div>
           <ul id="taskList" class="list-group">
 
@@ -174,7 +174,7 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Add/Edit Task</h5>
+              <h3 class="modal-title">ADD YOUR TASK</h3>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -192,7 +192,7 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
                   <label for="taskTag" class="form-label">Tag</label>
                   <input type="text" class="form-control" id="taskTag">
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn button-primary">Save</button>
               </form>
             </div>
           </div>

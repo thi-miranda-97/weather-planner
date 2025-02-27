@@ -104,17 +104,52 @@ input[type="checkbox"] {
   color: #747264;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-  font-size: inherit;
+.button-primary {
+  background-color: var(--text-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.4rem;
+  font-family: inherit;
+  padding: 1rem 1.8rem;
+  transition: all 0.3s ease-in;
+  cursor: pointer;
+  width: auto !important;
+  height: auto !important;
+  transition: transform 0.3s;
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004085;
+.button-primary:hover {
+  transform: scale(1.05);
+  background-color: var(--text-color);
+  color: var(--background-color);
+}
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+.btn-info,
+.btn-danger {
+  color: inherit;
+  border: none;
+  border-radius: 0.5rem;
+  width: auto !important;
+  height: auto !important;
+  transition: all 0.3s;
+}
+.btn-info:hover,
+.btn-danger:hover {
+  transform: scale(1.05);
+}
+.btn-info {
+  background-color: var(--blue) !important;
 }
 
+.btn-danger {
+  background-color: var(--red) !important;
+  color: var(--text-color) !important;
+}
 .navbar-brand:link,
 .navbar-brand:visited {
   color: inherit;
@@ -302,7 +337,7 @@ section {
 #hourlyForecastChart {
   width: 100% !important;
   height: 20rem !important;
-  border: none; /* Add a border to make it visible */
+  border: none;
   font-family: inherit;
 }
 
@@ -436,7 +471,12 @@ section {
   padding: 1.8rem;
   height: 100%;
 }
-
+.progress {
+  height: 2rem;
+}
+.progress-bar {
+  font-size: 1.6rem !important;
+}
 .task-col {
   height: 100%;
   border-radius: 1rem;
