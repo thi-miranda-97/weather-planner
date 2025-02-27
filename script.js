@@ -49,10 +49,10 @@ $(document).ready(function () {
             );
           } else {
             $("#current-city").text(response.currentWeather.cityName);
-            const localTime = response.currentWeather.localTime.split(" ");
+            const localTime = response.currentWeather.localTime.split("|");
+
             const currentHtml = generateWeatherHTML(
               "today",
-              "Today",
               localTime[0],
               localTime[1],
               response.currentWeather,
@@ -77,37 +77,32 @@ $(document).ready(function () {
     }
   });
 
-  function generateWeatherHTML(id, title, date, time, weather, hourlyForecast) {
+  function generateWeatherHTML(id, date, time, weather, hourlyForecast) {
     return `
   <section id="${id}" class="weather-showcase container-fluid">
     <div class="col row temp-col">
       <div id="current-weather">
-        <div class="d-flex justify-content-between">
-          <p>${title} (${date})</p>
+        <div class="d-flex gap-2">
+          <p>${date}</p>
           <p>${time}</p>
         </div>
-        <div class="">
+        <div>
           <p class="temp">${weather.temperature}&deg;C</p>
           <p>${weather.weatherDescription}</p>
         </div>
         <div class="weather-description d-flex">
           <div class="flex-grow-1">
-          
-            <p>${generateWeatherIcon("bi-water")} ${weather.pressure} hPa</p>
-            <p>${generateWeatherIcon(
-              "bi-droplet-half"
-            )} ${weather.humidity}%</p>
+            <p><i class="bi bi-water"></i> ${weather.pressure} hPa</p>
+            <p><i class="bi bi-droplet-half"></i> ${weather.humidity}%</p>
           </div>
           <div class="flex-grow-1">
-            <p>${generateWeatherIcon("bi-wind")} ${weather.windSpeed} m/s</p>
-            <p>${generateWeatherIcon(
-              "bi-brightness-low"
-            )} ${weather.uvIndex}</p>
+            <p><i class="bi bi-wind"></i> ${weather.windSpeed} m/s</p>
+            <p><i class="bi bi-brightness-low"></i> ${weather.uvIndex}</p>
           </div>
         </div>
       </div>
       <div class="col">
-        <p>Hourly Forecast</p>
+        <h3 style="text-align: center;">Forecast</h3>
         <canvas id="hourlyForecastChart" aria-label="Hourly Forecast Line Chart" role="img"></canvas>
       </div>
     </div>
@@ -116,34 +111,76 @@ $(document).ready(function () {
 
   function generateForecastHTML(forecast) {
     let forecastHtml = `<section id="next-days" class="weather-showcase hidden container-fluid d-flex justify-content-between">`;
+
     forecast.forEach((day) => {
+      let weatherCondition = day.weatherDescription?.toLowerCase() || "default";
+      let weatherIcon = generateWeatherIcon(weatherCondition);
+
+      // Mapping weather conditions to CSS variables
+      const weatherColors = {
+        "clear sky": "var(--blue)",
+        "few clouds": "var(--blue)",
+        "scattered clouds": "var(--yellow)",
+        "broken clouds": "var(--yellow)",
+        "shower rain": "var(--green)",
+        "light rain": "var(--green)",
+        rain: "var(--green)",
+        thunderstorm: "var(--green)",
+        snow: "var(--red)",
+        mist: "var(--red)",
+        default: "var(--background-color)", // Fallback to default theme background
+      };
+
+      // Use CSS variables for background color
+      let backgroundColor =
+        weatherColors[weatherCondition] || weatherColors["default"];
+
       forecastHtml += `
-    <div class="card">
-      <p>${day.day}</p>
-      <div class="icon-container">
-        <p class="temp">${day.temperature}&deg;C</p>
-        ${generateWeatherIcon("bi-brightness-high")}
-      </div>
-      <div class="card-content d-flex justify-content-between">
-        <div class="row">
-          <p>${generateWeatherIcon("bi-water")} ${day.pressure} hPa</p>
-          <p>${generateWeatherIcon("bi-droplet-half")} ${day.humidity}%</p>
-        </div>
-        <div class="row">
-          <p>${generateWeatherIcon("bi-wind")} ${day.windSpeed} m/s</p>
-          <p>${generateWeatherIcon("bi-brightness-low")} ${day.uvIndex}</p>
-        </div>
-      </div>
-    </div>`;
+        <div class="card" style="background-color: ${backgroundColor};">
+          <p>${day.day}</p>
+          <div class="icon-container">
+            <div>
+              <p class="temp">${day.temperature}&deg;C</p>
+              <p  style="text-align: center;">${day.weatherDescription}</p>
+            </div>
+            ${weatherIcon}
+          </div>
+          <div class="card-content">
+            <div class="row">
+              <p><i class="bi bi-water"></i> ${day.pressure} hPa</p>
+              <p><i class="bi bi-droplet-half"></i> ${day.humidity}%</p>
+            </div>
+            <div class="row">
+              <p><i class="bi bi-wind"></i> ${day.windSpeed} m/s</p>
+              <p><i class="bi bi-brightness-low"></i> ${day.uvIndex}</p>
+            </div>
+          </div>
+        </div>`;
     });
+
     forecastHtml += `</section>`;
     return forecastHtml;
   }
 
-  function generateWeatherIcon(iconClass) {
-    return `<i class="${iconClass}"></i>`;
-  }
+  function generateWeatherIcon(condition) {
+    const iconMap = {
+      "clear sky": "bi-brightness-high",
+      "few clouds": "bi-cloud-sun",
+      "scattered clouds": "bi-clouds",
+      "broken clouds": "bi-cloud-haze2",
+      "shower rain": "bi-cloud-drizzle",
+      "light rain": "bi-cloud-drizzle",
+      rain: "bi-cloud-rain",
+      thunderstorm: "bi-cloud-lightning",
+      snow: "bi-cloud-snow",
+      mist: "bi-cloud-fog",
+    };
 
+    // Default to 'bi-cloud' if no match found
+    return `<i class="bi ${
+      iconMap[condition] || "bi-cloud"
+    }" style="font-size: 6.4rem;"></i>`;
+  }
   function createChart(hourlyForecast) {
     const times = hourlyForecast.map((forecast) => forecast.time);
     const temperatures = hourlyForecast.map((forecast) => forecast.temperature);

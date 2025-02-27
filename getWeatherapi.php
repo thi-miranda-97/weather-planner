@@ -20,7 +20,7 @@ if (isset($_GET['city'])) {
     // Extract current weather and forecast data
     $currentWeather = [
       'cityName' => $weatherData['city']['name'],
-      'localTime' => gmdate('Y/m/d H:i', time() + $weatherData['city']['timezone']),
+      'localTime' => gmdate('j F|H:i', time() + $weatherData['city']['timezone']),
       'temperature' => $weatherData['list'][0]['main']['temp'],
       'weatherDescription' => $weatherData['list'][0]['weather'][0]['description'],
       'pressure' => $weatherData['list'][0]['main']['pressure'],
