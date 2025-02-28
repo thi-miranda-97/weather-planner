@@ -1,8 +1,37 @@
 <?php
 session_start();
-$username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
-?>
+require 'db.php';
 
+$theme = 'light';
+$totalTasks = 0;
+$completedTasks = 0;
+$username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
+
+if (isset($_SESSION['user_id'])) {
+  $stmt = $conn->prepare("SELECT theme FROM users WHERE id = ?");
+  $stmt->bind_param("i", $_SESSION['user_id']);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $user = $result->fetch_assoc();
+  if ($user) {
+    $theme = $user['theme'];
+  }
+
+  // Fetch total tasks and completed tasks
+  $stmt = $conn->prepare("SELECT COUNT(*) as total, SUM(completed) as completed FROM tasks WHERE user_id = ?");
+  $stmt->bind_param("i", $_SESSION['user_id']);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $taskStats = $result->fetch_assoc();
+  if ($taskStats) {
+    $totalTasks = $taskStats['total'];
+    $completedTasks = $taskStats['completed'];
+  }
+}
+
+
+
+?>
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -19,9 +48,9 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
 
 </head>
 
-<body>
+<body data-theme="<?php echo $theme; ?>">
   <!-- Modal for Sign Up & Sign In -->
-  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel">
+  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" innert>
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -91,17 +120,13 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
           <!-- City + Theme Toggle + User Dropdown -->
           <div id="city-name" class="d-flex gap-2 justify-content-center align-items-center">
             <!-- Show the city -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-              <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
-            </svg>
+            <i class="bi bi-geo-alt" id="city-icon"></i>
             <h2 class="h2" id="current-city"></h2>
           </div>
 
           <!-- Theme Toggle Button -->
           <button id="theme-toggle" class="btn me-5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-highlights" viewBox="0 0 16 16">
-              <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0m-8 5v1H4.5a.5.5 0 0 0-.093.009A7 7 0 0 1 3.1 13zm0-1H2.255a7 7 0 0 1-.581-1H8zm-6.71-2a7 7 0 0 1-.22-1H8v1zM1 8q0-.51.07-1H8v1zm.29-2q.155-.519.384-1H8v1zm.965-2q.377-.54.846-1H8v1zm2.137-2A6.97 6.97 0 0 1 8 1v1z" />
-            </svg>
+            <i class="bi bi-sun" id="theme-icon"></i>
           </button>
 
           <!-- User Avatar Dropdown -->
@@ -139,7 +164,13 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
         <a class="nav-link" href="#next-days" data-target="next-days">Next 5 Days</a>
       </li>
     </ul>
-    <article id="weatherResult"></article>
+    <article id="weatherResult">
+      <div id="loading" class="d-none">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </article>
 
 
     <!-- Task Section (only visible to authenticated users) -->
@@ -148,11 +179,10 @@ $username = isset($_SESSION['user']) ? $_SESSION['user'] : 'Guest';
 
         <div class="col progress-col">
 
-          <p><span>55</span> ouf of 100 tasks completed
-          </p>
+          <p id="progress-text"><?php echo $completedTasks; ?> out of <?php echo $totalTasks; ?> tasks completed</p>
           <!-- Progress bar -->
-          <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar" style="width: 25%">25%</div>
+          <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?php echo $completedTasks; ?>" aria-valuemin="0" aria-valuemax="<?php echo $totalTasks; ?>">
+            <div class="progress-bar" style="width: <?php echo ($totalTasks > 0) ? ($completedTasks / $totalTasks) * 100 : 0; ?>%"><?php echo ($totalTasks > 0) ? round(($completedTasks / $totalTasks) * 100) : 0; ?>%</div>
           </div>
         </div>
 

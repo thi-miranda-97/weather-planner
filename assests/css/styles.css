@@ -131,7 +131,6 @@ input[type="checkbox"] {
 }
 .btn-info,
 .btn-danger {
-  color: inherit;
   border: none;
   border-radius: 0.5rem;
   width: auto !important;
@@ -144,6 +143,7 @@ input[type="checkbox"] {
 }
 .btn-info {
   background-color: var(--blue) !important;
+  color: var(--text-color) !important;
 }
 
 .btn-danger {
@@ -285,9 +285,14 @@ input[type="checkbox"] {
 }
 
 /* TOGGLE  */
-
 #theme-toggle {
-  color: var(--primary);
+  border: none;
+}
+#theme-icon,
+#city-icon {
+  font-size: 3.2rem;
+  color: var(--text-color) !important;
+  transition: all 0.3s;
 }
 
 /* User Avatar */
@@ -361,25 +366,23 @@ section {
   background: var(--gradient);
   gap: 3.2rem;
 }
-.message-col {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr;
-  row-gap: 1.2rem;
+
+#weather-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.8rem;
+  list-style: none;
 }
 
-.message-col div {
+#weather-message-1,
+#weather-message-2 {
   box-shadow: var(--card-shadow);
   padding: 2rem;
   border-radius: 1rem;
+  font-style: italic;
 }
 
-.weather-description {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.8rem;
-  justify-content: space-between;
-}
 /* NEXT 5 DAYS */
 #next-days {
   width: 100%;
