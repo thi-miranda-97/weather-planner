@@ -33,7 +33,8 @@
 ## Screenshots
 
 ### Home Page
-
+![App Screenshot](./assets/images/screenshot-1.png)
+![App Screenshot](./assets/images/screenshot-2.png)
 ---
 
 ## Installation
@@ -50,7 +51,7 @@
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/your-username/weather-planner.git
+   git clone https://github.com/thi-miranda-97/weather-planner.git
    cd weather-planner
    ```
 
