@@ -98,7 +98,7 @@ if (isset($_SESSION['user_id'])) {
         <a class="navbar-brand" href="#">WEPLAN</a>
 
         <!-- Search City -->
-        <form id="weatherForm" method="GET" class="d-flex  justify-content-center">
+        <form id="weatherForm" method="GET" class="d-flex justify-content-center">
 
           <div class="input-group flex-grow-1">
             <label for="city" class="form-label"></label>

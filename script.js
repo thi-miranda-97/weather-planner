@@ -446,7 +446,7 @@ $(document).ready(function () {
   }
 
   function generateForecastHTML(forecast) {
-    let forecastHtml = `<section id="next-days" class="weather-showcase hidden container-fluid d-flex justify-content-between">`;
+    let forecastHtml = `<section id="next-days" class="weather-showcase hidden">`;
     forecast.forEach((day) => {
       const weatherCondition =
         day.weatherDescription?.toLowerCase() || "default";
